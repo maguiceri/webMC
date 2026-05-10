@@ -407,7 +407,7 @@ export default function Home() {
       {/* ============ Hero / About ============ */}
       <section
         id="about"
-        className="relative mx-auto flex min-h-screen max-w-5xl scroll-mt-28 flex-col-reverse items-center justify-center gap-6 px-6 py-20 md:flex-row md:items-center md:gap-12 md:py-24"
+        className="relative mx-auto flex min-h-[100svh] max-w-5xl scroll-mt-28 flex-col-reverse items-center justify-center gap-10 px-6 pb-12 pt-36 sm:pt-40 md:flex-row md:items-center md:gap-12 md:py-24"
       >
         {/* Intro copy (left on desktop) */}
         <div className="flex-1 text-center md:text-left">
