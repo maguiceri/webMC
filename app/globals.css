@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #020617;
+  --foreground: #e2e8f0;
 }
 
 @theme inline {
@@ -10,13 +10,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -51,12 +44,12 @@ body {
   clip: auto;
   white-space: normal;
   border-radius: 0.5rem;
-  background: rgb(45 212 191);
-  color: rgb(15 23 42);
+  background: rgb(56 189 248);
+  color: rgb(2 6 23);
   font-weight: 600;
   font-size: 0.875rem;
-  box-shadow: 0 10px 40px -10px rgb(45 212 191 / 0.5);
-  outline: 2px solid rgb(153 246 228);
+  box-shadow: 0 10px 40px -10px rgb(56 189 248 / 0.5);
+  outline: 2px solid rgb(186 230 253);
   outline-offset: 2px;
 }
 
@@ -67,10 +60,11 @@ body {
 }
 
 ::selection {
-  background-color: rgb(45 212 191 / 0.35);
+  background-color: rgb(56 189 248 / 0.35);
   color: rgb(248 250 252);
 }
 
+/* ---- Hero entrance ---- */
 @keyframes fadeDown {
   from {
     opacity: 0;
@@ -94,9 +88,195 @@ body {
   animation-fill-mode: forwards;
 }
 
+/* ---- Floating badges ---- */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.float {
+  animation: float 4.5s ease-in-out infinite;
+}
+
+/* ---- Pulse glow for timeline dots ---- */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.55),
+      0 0 0 0 rgba(56, 189, 248, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(56, 189, 248, 0),
+      0 0 18px 4px rgba(56, 189, 248, 0.45);
+  }
+}
+
+.pulseGlow {
+  animation: pulseGlow 2.4s ease-in-out infinite;
+}
+
+/* ---- Animated gradient text shimmer (deep blue palette) ---- */
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradientText {
+  background: linear-gradient(
+    90deg,
+    #bfdbfe 0%,
+    #60a5fa 35%,
+    #3b82f6 65%,
+    #1d4ed8 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+/* ---- Stars twinkling on the background ---- */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+/* ---- Slow breathing for the bigger 4-pointed stars ---- */
+@keyframes starBreathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(45deg);
+  }
+}
+
+/* ---- Soft nebula pulse ---- */
+@keyframes nebulaPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.05);
+  }
+}
+
+/* ---- Orbit rotation around the avatar (planet rings) ---- */
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- Neural network: pulsing nodes ---- */
+@keyframes nodePulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+.fxNode {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nodePulse 2.6s ease-in-out infinite;
+}
+
+/* ---- Neural network: data flowing along edges ---- */
+@keyframes edgeFlow {
+  to {
+    stroke-dashoffset: -60;
+  }
+}
+
+.fxEdgeFlow {
+  animation: edgeFlow 3s linear infinite;
+}
+
+/* ---- Neural network: subtle "thought" pulse around hub nodes ---- */
+@keyframes nodeAura {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.6);
+  }
+}
+
+.fxNodeAura {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nodeAura 4s ease-in-out infinite;
+}
+
+/* ---- Shooting stars (long quiet phase + a quick streak) ---- */
+@keyframes shootingStar {
+  0% {
+    transform: translate3d(-10vw, -10vh, 0) rotate(20deg);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  18% {
+    transform: translate3d(110vw, 60vh, 0) rotate(20deg);
+    opacity: 1;
+  }
+  19%,
+  100% {
+    transform: translate3d(110vw, 60vh, 0) rotate(20deg);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .fadeDown {
-    animation: none;
+  .fadeDown,
+  .float,
+  .pulseGlow,
+  .gradientText,
+  .fxNode,
+  .fxNodeAura,
+  .fxEdgeFlow,
+  [data-fx-star],
+  [data-fx-bigstar],
+  [data-fx-nebula],
+  [data-fx-shooting] {
+    animation: none !important;
     opacity: 1;
     transform: none;
     filter: none;

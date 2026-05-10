@@ -1,524 +1,799 @@
-// page.tsx
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import Reveal from "./components/Reveal";
-import ContactForm from "./components/ContactForm";
-import Header from "./components/Header";
-import { useState, useEffect, useRef } from "react";
+import VideoBackground from "./components/VideoBackground";
 
+/* ---------- Placeholder data – replace with your own ---------- */
+
+const PROFILE = {
+  name: "Magali Cerisola",
+  role: "Frontend Developer",
+  tagline: `Hi! 👋 I’m Frontend Developer with more than 4 years of experience building responsive and scalable web applications. Passionate about technology, problem-solving, and creating modern user experiencesw. Currently studying Artificial Intelligence Engineering, with a strong interest in automation, innovation, and continuous learning.
+
+I enjoy taking on new challenges, solving problems and turning ideas into high-quality digital products.`,
+  location: "Buenos Aires, Argentina",
+  email: "magui.cerisola@gmail.com",
+  available: true,
+  cvUrl: "/cv.pdf",
+  socials: {
+    linkedin: "https://www.linkedin.com/in/magali-cerisola-1a5111167/",
+    github: "https://github.com/maguiceri",
+  },
+};
+
+const SKILLS: { title: string; icon: keyof typeof CategoryIcons; items: string[] }[] = [
+  {
+    title: "Frontend",
+    icon: "code",
+    items: [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "JavaScript",
+      "HTML5",
+      "CSS3",
+      "Tailwind CSS",
+      "Sass",
+      "Redux",
+      "MongoDB",
+      "PostgreSQL",
+      "Dumbo",
+    ],
+  },
+  {
+    title: "UI / UX",
+    icon: "design",
+    items: [
+      "Figma",
+      "Responsive Design",
+      "Accessibility (WCAG)",
+      "Design Systems",
+      "Pixel-Perfect UI",
+    ],
+  },
+  {
+    title: "Tooling",
+    icon: "tools",
+    items: ["Git", "GitHub", "Jest", "Jira", "Confluence"],
+  },
+  {
+    title: "Other",
+    icon: "globe",
+    items: ["English (B2)", "Spanish (Native)"],
+  },
+];
+
+const WORK: {
+  role: string;
+  company: string;
+  period?: string;
+  location?: string;
+  current?: boolean;
+  bullets: string[];
+  tech?: string[];
+}[] = [
+  {
+    role: "Frontend Developer",
+    company: "Banco Santander",
+    period: "2020 — 2026",
+    location: "Buenos Aires, AR",
+    bullets: [
+      "Worked as a Frontend Developer, participating in both projects built from scratch and refactoring / modernization processes for internal and customer-facing applications.",
+      "Responsible for the development and maintenance of web interfaces, implementing new features, visual improvements, performance optimizations, accessibility enhancements and reusable component maintenance.",
+      "Contributed to improving both user experience and product quality across multiple banking products.",
+    ],
+  },
+  {
+    role: "Frontend Developer",
+    company: "Freelance Projects",
+    location: "Buenos Aires, AR",
+    bullets: [
+      "Translated Figma designs into pixel-perfect, responsive interfaces for several clients.",
+      "Delivered modern landing pages with a focus on accessibility and performance.",
+      "Coordinated with designers to iterate on UI details and micro-interactions.",
+    ],
+  },
+];
+
+const EDUCATION: {
+  degree: string;
+  institution: string;
+  period: string;
+  description?: string;
+}[] = [
+  {
+    degree: "Ingeniería en Inteligencia Artificial",
+    institution: "Universidad de Palermo (UP)",
+    period: "2025 — Present",
+    description: `I am currently studying Artificial Intelligence Engineering, where I am expanding my knowledge in programming, algorithms, software development, data analysis and intelligent systems.
+
+My studies are helping me strengthen problem-solving, analytical thinking and technology skills focused on innovation and automation.`,
+  },
+  {
+    degree: "Full-Stack Web Development Bootcamp",
+    institution: "CourseIT",
+    period: "2020",
+    description: `Completed a Full Stack Developer Bootcamp at CourseIT, where I gained practical experience in frontend and backend development, working with technologies such as HTML, CSS, JavaScript, React.js, Node.js, Express.js, MongoDB, Git and REST APIs.
+
+The program focused on building responsive and scalable web applications, problem-solving, database management and modern development best practices.`,
+  },
+  {
+    degree: "Technical Degree in Computer Programming",
+    institution: "Universidad Nacional de San Martín (UNSAM)",
+    period: "2016 — 2019",
+    description: `Developed knowledge in programming logic, algorithms, databases, software development, object-oriented programming and computer science fundamentals.
+
+The program provided both theoretical and practical training focused on problem-solving and software development.`,
+  },
+];
+
+const NAV = [
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "work", label: "Work" },
+  { id: "education", label: "Studies" },
+  { id: "contact", label: "Contact" },
+];
+
+/* ---------- Inline icons ---------- */
+
+const CategoryIcons = {
+  code: (
+    <path d="M8 8 4 12l4 4M16 8l4 4-4 4M14 4l-4 16" />
+  ),
+  design: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3v18M3 12h18" />
+    </>
+  ),
+  tools: (
+    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6a2 2 0 1 0 2.8 2.8l6-6a4 4 0 0 0 5.4-5.4l-2.6 2.6L13 9.4l1.7-3.1Z" />
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+    </>
+  ),
+};
+
+function Icon({
+  children,
+  className = "h-5 w-5",
+  strokeWidth = 1.75,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      {children}
+    </svg>
+  );
+}
+
+/* ---------- Page ---------- */
 
 export default function Home() {
   const [showHeader, setShowHeader] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const lastScrollY = useRef(0);
-
-  console.log("hola")
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-  
+
       if (currentScrollY < lastScrollY.current) {
-        setShowHeader(true); // SUBE → aparece
-      } else {
-        setShowHeader(false); // BAJA → desaparece
+        setShowHeader(true);
+      } else if (currentScrollY > 80) {
+        setShowHeader(false);
       }
-  
-      if (currentScrollY === 0) {
-        setShowHeader(true); // arriba del todo → siempre visible
-      }
-  
+
+      if (currentScrollY === 0) setShowHeader(true);
       lastScrollY.current = currentScrollY;
     };
-  
-    window.addEventListener("scroll", handleScroll);
-  
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Mobile drawer: lock body scroll + close on ESC
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [mobileOpen]);
 
   return (
     <div
       id="main-content"
       tabIndex={-1}
-      className="min-h-screen text-slate-900 relative overflow-hidden outline-none"
+      className="relative min-h-screen overflow-x-hidden text-slate-100 outline-none"
     >
-       <div className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ${showHeader ? "translate-y-0" : "-translate-y-full"}`}>
-  <Header />
-</div>
-      {/* Abstract background (visual-only) */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        {/* dark base */}
-        <div className="absolute inset-0 bg-[#050816]" />
+      <VideoBackground />
 
-        {/* glow blobs */}
-        <div className="absolute -top-32 left-[5%] h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle_at_center,rgba(45,212,191,0.28),transparent_60%)] blur-3xl" />
-        <div className="absolute top-[30%] right-[0%] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.22),transparent_60%)] blur-3xl" />
-        <div className="absolute bottom-[0%] left-[30%] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.18),transparent_60%)] blur-3xl" />
-
-        {/* organic shape */}
-        <div className="absolute top-[10%] left-[10%] w-[350px] h-[700px] bg-gradient-to-b from-teal-400/20 to-sky-500/10 blur-2xl rotate-12 rounded-[45%_55%_60%_40%/40%_45%_55%_60%]" />
-      </div>
-     
-
-      {/* Hero Section */}
-      <section
-        id="top"
-        className="relative flex flex-col md:flex-row items-center justify-between max-w-5xl mx-auto scroll-mt-28 py-28 px-4 text-slate-100"
+      {/* ============ Sticky nav ============ */}
+      <header
+        className={`fixed top-0 left-0 z-50 w-full transition-transform duration-300 ${
+          showHeader ? "translate-y-0" : "-translate-y-full"
+        }`}
       >
-        <div className="flex-1 text-left">
-          <h1
-            style={{ animationDelay: "0.25s" }}
-            className="fadeDown text-balance text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-teal-200 via-cyan-200 to-sky-200 bg-clip-text text-transparent"
+        <div className="mx-auto mt-3 flex max-w-5xl items-center justify-between rounded-2xl border border-sky-400/15 bg-slate-950/60 px-5 py-3 backdrop-blur-md shadow-[0_10px_40px_-20px_rgba(56,189,248,0.45)]">
+          <a
+            href="#about"
+            className="font-mono text-sm tracking-[0.25em] text-sky-300 transition hover:text-sky-200"
           >
-            Web Developer building modern web applications
-          </h1>
-          <p style={{ animationDelay: "0.40s" }} className="fadeDown max-w-md text-lg md:text-xl text-slate-200/80 mb-8">
-          Hi, I'm Magali Cerisola — a freelance web developer.
+            Magali Cerisola
+          </a>
 
-          I build modern, responsive websites and web applications focused on performance and user experience.
-          
-          +4 years of experience.
-          </p>
-          <Link
-            href="#contact"
-            style={{ animationDelay: "0.55s" }}
-            className="fadeDown inline-block rounded-full bg-gradient-to-r from-teal-400 to-cyan-500 px-8 py-3 text-center text-slate-950 font-semibold shadow-lg outline-none transition duration-200 hover:brightness-110 hover:shadow-teal-500/25 motion-safe:hover:scale-[1.03] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-teal-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
+          {/* Desktop nav (md+) */}
+          <nav className="hidden md:block">
+            <ul className="flex items-center gap-x-5 text-sm text-slate-200/85">
+              {NAV.map((item) => (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    className="rounded px-1.5 py-1 transition hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Mobile hamburger (< md) */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-sky-400/25 bg-slate-950/50 text-sky-200 transition hover:border-sky-300/60 hover:text-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60 md:hidden"
           >
-            Let&apos;s work together
-          </Link>
+            <Icon className="h-5 w-5" strokeWidth={2}>
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </Icon>
+          </button>
         </div>
-        <div className="flex-1 flex justify-center md:justify-end mt-12 md:mt-0">
+      </header>
+
+      {/* ============ Mobile drawer ============ */}
+      <div
+        className={`fixed inset-0 z-[60] md:hidden ${
+          mobileOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+        aria-hidden={!mobileOpen}
+      >
+        {/* Backdrop */}
+        <button
+          type="button"
+          aria-label="Close navigation menu"
+          tabIndex={mobileOpen ? 0 : -1}
+          onClick={() => setMobileOpen(false)}
+          className={`absolute inset-0 cursor-default bg-slate-950/70 backdrop-blur-sm transition-opacity duration-300 ${
+            mobileOpen ? "opacity-100" : "opacity-0"
+          }`}
+        />
+
+        {/* Side panel */}
+        <aside
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
+          className={`absolute right-0 top-0 flex h-full w-72 max-w-[85vw] flex-col border-l border-sky-400/15 bg-slate-950/95 p-6 shadow-[0_30px_80px_-20px_rgba(56,189,248,0.35)] backdrop-blur-md transition-transform duration-300 ease-out ${
+            mobileOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-sky-300/80">
+              Menu
+            </span>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close navigation menu"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-sky-400/20 bg-slate-950/60 text-sky-200 transition hover:border-sky-300/60 hover:text-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
+            >
+              <Icon className="h-4 w-4" strokeWidth={2}>
+                <path d="M6 6 18 18M18 6 6 18" />
+              </Icon>
+            </button>
+          </div>
+
+          <nav className="mt-8">
+            <ul className="space-y-1">
+              {NAV.map((item, i) => (
+                <li
+                  key={item.id}
+                  style={{
+                    transitionDelay: mobileOpen ? `${i * 50 + 80}ms` : "0ms",
+                  }}
+                  className={`transform transition-all duration-300 ${
+                    mobileOpen
+                      ? "translate-x-0 opacity-100"
+                      : "translate-x-4 opacity-0"
+                  }`}
+                >
+                  <a
+                    href={`#${item.id}`}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-between rounded-xl px-4 py-3 text-base text-slate-100 transition hover:bg-sky-500/10 hover:text-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="font-mono text-[10px] text-sky-300/60">
+                        0{i + 1}
+                      </span>
+                      <span>{item.label}</span>
+                    </span>
+                    <Icon className="h-4 w-4 text-sky-300/70" strokeWidth={2}>
+                      <path d="M9 6l6 6-6 6" />
+                    </Icon>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="mt-auto border-t border-white/5 pt-6">
+            <a
+              href={`mailto:${PROFILE.email}`}
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-sky-400 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_15px_40px_-15px_rgba(56,189,248,0.7)]"
+            >
+              <Icon className="h-4 w-4" strokeWidth={2}>
+                <path d="M4 4h16v16H4z" />
+                <path d="m4 6 8 7 8-7" />
+              </Icon>
+              Get in touch
+            </a>
+            <div className="mt-3 flex justify-center gap-2">
+              <a
+                href={PROFILE.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-sky-400/25 bg-slate-950/40 text-sky-200 transition hover:border-sky-300/60 hover:text-sky-100"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden>
+                  <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.93-2.06-2.07 0-1.14.92-2.06 2.06-2.06s2.06.92 2.06 2.06c0 1.14-.92 2.07-2.06 2.07zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+                </svg>
+              </a>
+              <a
+                href={PROFILE.socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-sky-400/25 bg-slate-950/40 text-sky-200 transition hover:border-sky-300/60 hover:text-sky-100"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden>
+                  <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.76.4-1.27.74-1.56-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.5 3.17-1.18 3.17-1.18.63 1.6.23 2.76.11 3.05.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* ============ Hero / About ============ */}
+      <section
+        id="about"
+        className="relative mx-auto flex min-h-screen max-w-5xl scroll-mt-28 flex-col-reverse items-center justify-center gap-6 px-6 py-20 md:flex-row md:items-center md:gap-12 md:py-24"
+      >
+        {/* Intro copy (left on desktop) */}
+        <div className="flex-1 text-center md:text-left">
+          <p
+            style={{ animationDelay: "0.25s" }}
+            className="fadeDown font-mono text-xs uppercase tracking-[0.35em] text-sky-300/80"
+          >
+            Curriculum Vitae
+          </p>
+
+          <h1
+            style={{ animationDelay: "0.4s" }}
+            className="fadeDown gradientText mt-2 text-balance text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl"
+          >
+            {PROFILE.name}
+          </h1>
+          <h2
+            style={{ animationDelay: "0.55s" }}
+            className="fadeDown mt-2 text-base font-medium text-sky-100/90 sm:text-lg"
+          >
+            {PROFILE.role}{" "}
+            <span className="text-slate-300/70">·</span>{" "}
+            <span className="text-slate-200/70">{PROFILE.location}</span>
+          </h2>
+          <p
+            style={{ animationDelay: "0.7s" }}
+            className="fadeDown mx-auto mt-4 max-w-xl text-balance text-sm leading-relaxed text-slate-200/80 sm:text-base md:mx-0"
+          >
+            {PROFILE.tagline.split(/\n\s*\n/)[0]}
+          </p>
+
+          {/* CTAs */}
+          <div
+            style={{ animationDelay: "0.85s" }}
+            className="fadeDown mt-5 flex flex-wrap items-center justify-center gap-3 md:justify-start"
+          >
+            <a
+              href={PROFILE.socials.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn profile (opens in new tab)"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-sky-400/25 bg-slate-950/50 text-sky-200 backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-300/60 hover:text-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+                <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.93-2.06-2.07 0-1.14.92-2.06 2.06-2.06s2.06.92 2.06 2.06c0 1.14-.92 2.07-2.06 2.07zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+              </svg>
+            </a>
+            <a
+              href={PROFILE.socials.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub profile (opens in new tab)"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-sky-400/25 bg-slate-950/50 text-sky-200 backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-300/60 hover:text-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+                <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.76.4-1.27.74-1.56-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.5 3.17-1.18 3.17-1.18.63 1.6.23 2.76.11 3.05.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {/* Planet-style avatar (right on desktop) */}
         <div
-  style={{ animationDelay: "0.25s" }}
-  className="fadeDown w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-full overflow-hidden border border-white/15 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_25px_70px_-35px_rgba(0,255,210,0.45)]"
->
+          style={{ animationDelay: "0.15s" }}
+          className="fadeDown relative shrink-0"
+        >
+          <div className="absolute -inset-6 rounded-full bg-gradient-to-br from-blue-500/45 via-indigo-500/25 to-blue-800/40 blur-3xl" />
+
+          <div
+            className="absolute -inset-8 rounded-full border border-blue-300/20"
+            style={{ animation: "orbit 38s linear infinite reverse" }}
+          >
+            <span
+              aria-hidden
+              className="absolute left-1/2 -top-1 h-2 w-2 -translate-x-1/2 rounded-full bg-blue-200/90 shadow-[0_0_10px_rgba(147,197,253,0.85)]"
+            />
+          </div>
+
+          <div
+            className="absolute -inset-4 rounded-full border border-sky-300/30"
+            style={{ animation: "orbit 22s linear infinite" }}
+          >
+            <span
+              aria-hidden
+              className="absolute left-1/2 -top-1.5 h-3 w-3 -translate-x-1/2 rounded-full bg-sky-200 shadow-[0_0_14px_rgba(186,230,253,0.95)]"
+            />
+            <span
+              aria-hidden
+              className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 translate-x-1/2 rounded-full bg-blue-300/80 shadow-[0_0_8px_rgba(147,197,253,0.7)]"
+            />
+          </div>
+
+          <div className="relative h-32 w-32 overflow-hidden rounded-full border border-white/15 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_25px_70px_-20px_rgba(59,130,246,0.65)] sm:h-48 sm:w-48 md:h-56 md:w-56">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-10 rounded-full"
+              style={{
+                boxShadow:
+                  "inset 0 0 40px rgba(186,230,253,0.18), inset 12px -12px 60px rgba(2,6,23,0.55)",
+              }}
+            />
             <Image
-              src="/avatar.jpeg" // Uses the avatar from /public
-              alt="Portrait of Magali Cerisola"
-              width={192}
-              height={192}
-              className="object-cover w-full h-full"
+              src="/profile.jpeg"
+              alt={`Portrait of ${PROFILE.name}`}
+              width={240}
+              height={240}
+              className="h-full w-full object-cover"
               priority
             />
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="max-w-6xl mx-auto scroll-mt-28 px-4 py-20 text-slate-100">
-        <Reveal as="h2" delayMs={0} className="text-center text-2xl font-semibold mb-4 text-slate-100">
-          Services
+      {/* ============ Skills ============ */}
+      <section
+        id="skills"
+        className="relative mx-auto max-w-5xl scroll-mt-28 px-6 py-20"
+      >
+        <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.35em] text-sky-300/80">
+          02 / Toolbox
         </Reveal>
         <Reveal
-          as="p"
-          delayMs={150}
-          className="mx-auto max-w-2xl text-center text-slate-200/75 text-lg mb-12"
+          as="h2"
+          delayMs={120}
+          className="mt-3 text-3xl font-bold text-slate-50 sm:text-4xl"
         >
-          From idea to production, I help you ship user-friendly interfaces with consistent design and strong UX.
+          Skills &amp; tools
         </Reveal>
 
-        <Reveal as="div" delayMs={200} className="w-full">
-          <div className="flex flex-wrap justify-center gap-8">
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Custom Website Development</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                I build modern, high-quality websites from scratch tailored to your business needs. Clean code,
-                scalable architecture, and a strong focus on user experience.
-              </p>
-            </article>
-
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Responsive &amp; Mobile-First Design</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                Your website will look and work perfectly across all devices - mobile, tablet, and desktop - ensuring a
-                seamless user experience everywhere.
-              </p>
-            </article>
-
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Pixel-Perfect UI Implementation</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                I transform your designs (Figma or similar) into clean, accurate, and interactive interfaces with
-                attention to detail in layout, spacing, and typography.
-              </p>
-            </article>
-
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Performance &amp; UX Optimization</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                I optimize your website for speed, smooth interactions, and better user experience, improving load times
-                and overall usability.
-              </p>
-            </article>
-
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Ongoing Maintenance &amp; Support</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                I provide continuous support, updates, and improvements to keep your website secure, up to date, and
-                running smoothly.
-              </p>
-            </article>
-
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Hosting &amp; Deployment Setup</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                I handle deployment and hosting setup so your website is live, secure, and accessible with reliable
-                performance.
-              </p>
-            </article>
-
-            <article className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-slate-950/45">
-              <h3 className="text-lg font-semibold mb-2 text-teal-200">Website Review &amp; Improvements</h3>
-              <p className="text-sm leading-7 text-slate-200/75">
-                I analyze your existing website and provide actionable improvements in design, performance, and
-                usability.
-              </p>
-            </article>
-          </div>
-        </Reveal>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2">
+          {SKILLS.map((group, gi) => (
+            <Reveal
+              key={group.title}
+              delayMs={gi * 120}
+              direction={gi % 2 === 0 ? "left" : "right"}
+              className="group relative overflow-hidden rounded-2xl border border-sky-400/15 bg-slate-950/50 p-6 backdrop-blur-md transition hover:border-sky-300/40 hover:shadow-[0_30px_80px_-40px_rgba(56,189,248,0.55)]"
+            >
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-sky-400/25 bg-sky-500/10 text-sky-200">
+                  <Icon className="h-4 w-4">{CategoryIcons[group.icon]}</Icon>
+                </span>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200">
+                  {group.title}
+                </h3>
+              </div>
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {group.items.map((item, idx) => (
+                  <li
+                    key={item}
+                    className="float inline-flex items-center rounded-full border border-sky-400/25 bg-sky-500/10 px-3 py-1 text-xs text-sky-100 transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-500/20 hover:shadow-[0_0_18px_rgba(56,189,248,0.35)]"
+                    style={{ animationDelay: `${(idx % 5) * -0.7}s` }}
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          ))}
+        </div>
       </section>
 
-      {/* Projects Section */}
-      <section id="projects" className="max-w-5xl mx-auto scroll-mt-28 px-4 py-20 text-slate-100">
-        <Reveal as="h2" delayMs={0} className="text-2xl font-semibold mb-10 text-slate-100">
-          Projects
+      {/* ============ Work Experience ============ */}
+      <section
+        id="work"
+        className="relative mx-auto max-w-5xl scroll-mt-28 px-6 py-20"
+      >
+        <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.35em] text-sky-300/80">
+          04 / Career
         </Reveal>
-        <div className="grid gap-8 md:grid-cols-2 md:items-stretch">
-          <Reveal
-            as="article"
-            delayMs={150}
-            className="relative flex h-full min-h-[280px] flex-col overflow-hidden rounded-2xl border border-amber-500/25 bg-slate-950/70 p-6 shadow-[0_0_0_1px_rgba(251,191,36,0.08),inset_0_1px_0_0_rgba(255,255,255,0.04)] backdrop-blur transition hover:border-amber-400/35"
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-[0.06]"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(-33deg, transparent, transparent 12px, rgba(251, 191, 36, 0.9) 12px, rgba(251, 191, 36, 0.9) 13px)",
-              }}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full border border-amber-500/20"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -bottom-6 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-amber-500/5 blur-2xl"
-            />
+        <Reveal
+          as="h2"
+          delayMs={120}
+          className="mt-3 text-3xl font-bold text-slate-50 sm:text-4xl"
+        >
+          Work experience
+        </Reveal>
 
-            <div className="relative flex items-start justify-between gap-3">
-              <div className="inline-flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-950/40 px-2.5 py-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  className="h-3.5 w-3.5 shrink-0 text-amber-400/90"
-                  aria-hidden
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.5 10.5V6.75a4.5 4.5 0 0 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                  />
-                </svg>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-200/90">
-                  Confidential
+        <ol className="relative mt-12 space-y-10 pl-8 md:pl-12">
+          <span
+            aria-hidden
+            className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-sky-300/70 via-blue-400/40 to-transparent md:left-4"
+          />
+
+          {WORK.map((entry, i) => (
+            <li key={`${entry.company}-${i}`} className="relative">
+              <span
+                aria-hidden
+                className="pulseGlow absolute left-2 top-2 h-3 w-3 rounded-full bg-sky-400 ring-4 ring-sky-400/20 md:left-3"
+              />
+              <Reveal delayMs={i * 120} direction="right">
+                <article className="group relative overflow-hidden rounded-2xl border border-sky-400/15 bg-slate-950/55 p-6 backdrop-blur-md transition hover:-translate-y-0.5 hover:border-sky-300/40 hover:shadow-[0_30px_80px_-40px_rgba(56,189,248,0.55)]">
+                  <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold text-slate-50">
+                      {entry.role}
+                      {entry.current && (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          Current
+                        </span>
+                      )}
+                    </h3>
+                    <span className="font-mono text-xs uppercase tracking-wider text-sky-300/90">
+                      {entry.period}
+                    </span>
+                  </header>
+                  <p className="mt-1 text-sm text-sky-200/85">
+                    {entry.company}
+                    {entry.location && (
+                      <>
+                        <span className="mx-2 text-sky-400/40">•</span>
+                        <span className="text-slate-300/80">{entry.location}</span>
+                      </>
+                    )}
+                  </p>
+                  <ul className="mt-4 space-y-2 text-sm leading-relaxed text-slate-200/80">
+                    {entry.bullets.map((b, bi) => (
+                      <li key={bi} className="flex gap-3">
+                        <span
+                          aria-hidden
+                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400/80"
+                        />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {entry.tech && entry.tech.length > 0 && (
+                    <ul className="mt-5 flex flex-wrap gap-1.5">
+                      {entry.tech.map((t) => (
+                        <li
+                          key={t}
+                          className="rounded-md border border-sky-400/15 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-sky-200/85"
+                        >
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              </Reveal>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* ============ Education ============ */}
+      <section
+        id="education"
+        className="relative mx-auto max-w-5xl scroll-mt-28 px-6 py-20"
+      >
+        <Reveal as="p" className="font-mono text-xs uppercase tracking-[0.35em] text-sky-300/80">
+          05 / Studies
+        </Reveal>
+        <Reveal
+          as="h2"
+          delayMs={120}
+          className="mt-3 text-3xl font-bold text-slate-50 sm:text-4xl"
+        >
+          Education
+        </Reveal>
+
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {EDUCATION.map((entry, i) => (
+            <Reveal
+              key={entry.degree}
+              delayMs={i * 140}
+              direction="up"
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-blue-400/15 bg-slate-950/55 p-6 backdrop-blur-md transition hover:-translate-y-1 hover:border-blue-300/40 hover:shadow-[0_30px_80px_-35px_rgba(59,130,246,0.55)]"
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full border border-blue-400/15"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl transition-opacity duration-500 group-hover:opacity-80"
+              />
+
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-blue-400/25 bg-blue-500/10 text-blue-200">
+                  <Icon className="h-4 w-4">
+                    <path d="M22 10 12 5 2 10l10 5 10-5Z" />
+                    <path d="M6 12v5c2 2 10 2 12 0v-5" />
+                  </Icon>
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-blue-300/80">
+                  {entry.period}
                 </span>
               </div>
-              <span className="font-mono text-[10px] leading-none text-slate-500">NDA</span>
-            </div>
 
-            <h3 className="relative mt-5 text-lg font-semibold text-slate-100">Banking Platform UI</h3>
-            <p className="relative mt-1 text-xs text-amber-200/55">Client work - restricted disclosure</p>
-
-            <div className="relative mt-5 space-y-2.5" aria-hidden>
-              <div className="h-2.5 w-full rounded-sm bg-slate-800/90" />
-              <div className="h-2.5 w-[92%] rounded-sm bg-slate-800/80" />
- 
-            </div>
-
-            <p className="relative mt-5 text-[11px] leading-relaxed text-slate-400">
-            Contributed to the development and modernization of a large-scale banking platform, building and refactoring complex frontend features using React and modern technologies.
-
-Focused on performance optimization, reusable component architecture, and improving user experience across critical user flows.
-
-Collaborated closely with product, design, and backend teams in an Agile environment.
-            </p>
-
-            <p className="relative mt-auto pt-4 font-mono text-[10px] tracking-wide text-slate-600">
-              REF: <span className="text-slate-500">XX-XXXX-BANK</span>
-            </p>
-          </Reveal>
-          <Reveal
-            as="article"
-            delayMs={300}
-            className="group relative flex h-full min-h-[280px] flex-col overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.06)] outline-none focus-within:ring-2 focus-within:ring-teal-400/35 focus-within:ring-offset-2 focus-within:ring-offset-[#050816]"
-          >
-            <div className="relative min-h-[240px] w-full min-h-0 flex-1">
-              <Image
-                src="/proyect.png"
-                alt="Featured project screenshot"
-                fill
-                className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.04] motion-safe:group-focus-within:scale-[1.04]"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
-              />
-
-              {/* Always-on bottom fade so title reads on the image */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-transparent"
-              />
-
-              {/* Hover / focus: teal-cyan veil so the image stays slightly visible behind */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-teal-500/25 via-slate-950/55 to-cyan-500/20 opacity-0 backdrop-blur-[0px] transition-all duration-300 group-hover:opacity-100 group-hover:backdrop-blur-[6px] group-focus-within:opacity-100 group-focus-within:backdrop-blur-[6px]"
-              />
-
-              <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-6">
-                <div className="pointer-events-auto text-left">
-                  <Link
-                    href="https://atucasa.net/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block rounded-md outline-none transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                    aria-label="Import Services Web Application - visit Atucasa (opens in a new tab)"
-                  >
-                    <h3 className="text-lg font-semibold text-teal-200 drop-shadow-md underline-offset-4 transition group-hover:underline">
-                      Import Services Web Application
-                    </h3>
-                  </Link>
-                  <p className="mt-2 max-w-prose text-sm leading-relaxed text-slate-100/95 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
-                    Built a responsive web platform for an import services business, including a cost calculator, user
-                    authentication, and key sections like services, process, and contact to enhance user experience and
-                    conversion.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
-
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="max-w-3xl mx-auto scroll-mt-28 px-4 py-16 text-slate-100">
-        <div className="rounded-2xl border border-white/10 bg-slate-950/35 backdrop-blur p-8 md:p-10 shadow-[0_0_0_1px_rgba(255,255,255,0.06)] text-center">
-          <Reveal as="h2" delayMs={0} className="text-2xl font-semibold mb-4 text-slate-100">
-            About Me
-          </Reveal>
-          <Reveal as="p" delayMs={150} className="text-slate-200/75 text-lg">
-          Hi, I'm Magali Cerisola — a frontend developer with over 4 years of experience building web applications for real businesses, including the banking sector.
-
-I help clients create modern, responsive, and high-quality websites that are fast, easy to use, and designed to deliver results.
-
-My goal is to turn your ideas into a functional and professional product that meets your needs and provides a great experience for your users.
-
-I'm passionate about development and always focused on writing clean, efficient code.
-
-Let’s work together to bring your project to life.
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Reviews Section */}
-      <section id="reviews" className="max-w-6xl mx-auto scroll-mt-28 px-4 py-20 text-slate-100">
-        <Reveal as="h2" delayMs={0} className="text-center text-2xl font-semibold mb-4 text-slate-100">
-          Reviews
-        </Reveal>
-        <Reveal
-          as="p"
-          delayMs={150}
-          className="mx-auto max-w-2xl text-center text-slate-200/75 text-lg mb-12"
-        >
-          Here&apos;s what clients say about working together.
-        </Reveal>
-
-        <Reveal as="div" delayMs={200} className="w-full">
-          <div className="flex flex-wrap justify-center gap-8">
-            <article className="group relative w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/40 backdrop-blur px-8 pb-8 pt-10 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-teal-400/25 hover:shadow-[0_24px_56px_-24px_rgba(45,212,191,0.35)] motion-safe:hover:-translate-y-1">
-              <div className="relative mx-auto mb-6 flex h-24 w-24 shrink-0 items-center justify-center">
-                <div
-                  aria-hidden
-                  className="absolute -inset-2 rounded-full bg-gradient-to-br from-teal-400/50 via-cyan-400/20 to-sky-500/30 opacity-50 blur-lg transition-opacity duration-300 group-hover:opacity-90"
-                />
-                <Image
-                  src="/mar.jpeg"
-                  alt="Martina Vega, client review"
-                  width={96}
-                  height={96}
-                  className="relative z-[1] h-24 w-24 rounded-full object-cover ring-2 ring-white/15 ring-offset-2 ring-offset-[#050816] transition-transform duration-300 motion-safe:group-hover:scale-105 group-hover:ring-teal-400/40"
-                />
-              </div>
-              <p className="text-sm leading-relaxed text-slate-200/85">
-              “Working with Magali was a great experience. She translated my designs into a clean, pixel-perfect interface while maintaining attention to detail in spacing, typography, and responsiveness. Communication was smooth, and the final result matched the design perfectly.”
-              </p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-                <Link
-                  href="https://linktr.ee/m.dagos?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAdGRleARLpbZleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA8xMjQwMjQ1NzQyODc0MTQAAafJ-l41L_EfCsd4nxU_CdeBlSX4AbWTgru4REtjrwRtxt_rKGYQQ-ZeYXHPsg_aem_4pDjRnYeDZmv3x2OZyZhQQ"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md text-sm font-semibold text-teal-200/95 outline-none transition hover:text-teal-100 focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
-                  aria-label="Martina Vega on Linktree (opens in a new tab)"
-                >
-                  <span>Martina Vega</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4 shrink-0 text-teal-300/90"
-                    aria-hidden
-                  >
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
-                </Link>
-              </div>
-              <p className="text-xs text-slate-400">UI/UX Designer</p>
-            </article>
-
-            <article className="group relative w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/40 backdrop-blur px-8 pb-8 pt-10 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-teal-400/25 hover:shadow-[0_24px_56px_-24px_rgba(45,212,191,0.35)] motion-safe:hover:-translate-y-1">
-              <div className="relative mx-auto mb-6 flex h-24 w-24 shrink-0 items-center justify-center">
-                <div
-                  aria-hidden
-                  className="absolute -inset-2 rounded-full bg-gradient-to-br from-teal-400/50 via-cyan-400/20 to-sky-500/30 opacity-50 blur-lg transition-opacity duration-300 group-hover:opacity-90"
-                />
-                <Image
-                  src="/fran.jpeg"
-                  alt="Francisco Piaggio, client review"
-                  width={96}
-                  height={96}
-                  className="relative z-[1] h-24 w-24 rounded-full object-cover ring-2 ring-white/15 ring-offset-2 ring-offset-[#050816] transition-transform duration-300 motion-safe:group-hover:scale-105 group-hover:ring-teal-400/40"
-                />
-              </div>
-              <p className="text-sm leading-relaxed text-slate-200/85">
-              “Magali writes clean, maintainable code and has a strong grasp of modern frontend practices. She builds reusable components and always pays attention to performance and detail.”
-              </p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-                <Link
-                  href="https://www.linkedin.com/in/francisco-piaggio-224730b9/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md text-sm font-semibold text-teal-200/95 outline-none transition hover:text-teal-100 focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
-                  aria-label="Francisco Piaggio on LinkedIn (opens in a new tab)"
-                >
-                  <span>Francisco Piaggio</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-4 w-4 shrink-0 text-teal-300/90"
-                    aria-hidden
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </Link>
-              </div>
-              <p className="text-xs text-slate-400">Frontend Developer</p>
-            </article>
-
-            <article className="group relative w-full max-w-sm rounded-2xl border border-white/10 bg-slate-950/40 backdrop-blur px-8 pb-8 pt-10 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-teal-400/25 hover:shadow-[0_24px_56px_-24px_rgba(45,212,191,0.35)] motion-safe:hover:-translate-y-1">
-              <div className="relative mx-auto mb-6 flex h-24 w-24 shrink-0 items-center justify-center">
-                <div
-                  aria-hidden
-                  className="absolute -inset-2 rounded-full bg-gradient-to-br from-teal-400/50 via-cyan-400/20 to-sky-500/30 opacity-50 blur-lg transition-opacity duration-300 group-hover:opacity-90"
-                />
-                <Image
-                  src="/jp.jpeg"
-                  alt="Juan Pablo Saraceno, client review"
-                  width={96}
-                  height={96}
-                  className="relative z-[1] h-24 w-24 rounded-full object-cover ring-2 ring-white/15 ring-offset-2 ring-offset-[#050816] transition-transform duration-300 motion-safe:group-hover:scale-105 group-hover:ring-teal-400/40"
-                />
-              </div>
-              <p className="text-sm leading-relaxed text-slate-200/85">
-              “Magali delivered a high-quality website that met both our design and performance expectations. She was reliable, easy to work with, and always communicated clearly throughout the process. The final product feels fast, modern, and user-friendly.”
-              </p>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-                <Link
-                  href="https://www.linkedin.com/in/juan-pablo-saraceno-49656b/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md text-sm font-semibold text-teal-200/95 outline-none transition hover:text-teal-100 focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
-                  aria-label="Juan Pablo Saraceno on LinkedIn (opens in a new tab)"
-                >
-                  <span>Juan Pablo Saraceno</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-4 w-4 shrink-0 text-teal-300/90"
-                    aria-hidden
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </Link>
-              </div>
-              <p className="text-xs text-slate-400">Product Lead / Business Owner</p>
-            </article>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="max-w-5xl mx-auto scroll-mt-28 px-4 py-20 text-slate-100">
-        <Reveal as="h2" delayMs={0} className="text-2xl font-semibold mb-10 text-slate-100">
-          Contact
-        </Reveal>
-
-        <div className="rounded-3xl border border-white/10 bg-slate-950/35 backdrop-blur shadow-[0_0_0_1px_rgba(255,255,255,0.06)] overflow-hidden">
-          <div className="grid md:grid-cols-2">
-            {/* Left gradient panel */}
-            <div className="relative p-10 md:p-12">
-              <div aria-hidden className="absolute inset-0">
-                <div className="absolute inset-0 bg-[radial-gradient(1200px_circle_at_20%_20%,rgba(45,212,191,0.55),transparent_55%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_70%_80%,rgba(56,189,248,0.35),transparent_55%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_60%_35%,rgba(99,102,241,0.22),transparent_55%)]" />
-                <div className="absolute inset-0 bg-slate-950/35" />
-              </div>
-
-              <Reveal as="div" delayMs={150} className="relative">
-                <p className="text-teal-200/90 text-sm font-medium tracking-wide">Get in touch</p>
-                <h3 className="mt-3 text-4xl font-semibold text-white">Let&apos;s build something</h3>
-                <p className="mt-3 max-w-sm text-slate-200/80">
-                  Tell me about your product, timeline, and goals. I usually reply within 24-48 hours.
+              <h3 className="mt-4 text-base font-semibold text-slate-50">
+                {entry.degree}
+              </h3>
+              <p className="mt-1 text-sm text-blue-200/85">{entry.institution}</p>
+              {entry.description && (
+                <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-slate-200/75">
+                  {entry.description}
                 </p>
-
-                <div className="mt-8 text-sm text-slate-200/80">
-                  <span className="text-slate-200/60">Email</span>
-                  <div className="mt-1">
-                    <a
-                      className="text-teal-200 underline underline-offset-4 outline-none transition rounded-sm hover:text-teal-100 focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
-                      href="mailto:magui.cerisola@gmail.com"
-                    >
-                      magui.cerisola@gmail.com
-                    </a>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-
-            {/* Right form panel */}
-            <div className="p-10 md:p-12 bg-slate-950/60">
-              <Reveal as="div" delayMs={200} className="">
-                <p className="text-center text-slate-200/80 text-sm font-medium">Send a message</p>
-
-                <ContactForm />
-              </Reveal>
-            </div>
-          </div>
+              )}
+            </Reveal>
+          ))}
         </div>
       </section>
 
-      <footer className="text-center text-xs text-slate-200/40 py-10">
-        &copy; {new Date().getFullYear()} Magali Cerisola. All rights reserved.
+      {/* ============ Contact ============ */}
+      <section
+        id="contact"
+        className="relative mx-auto max-w-5xl scroll-mt-28 px-6 py-24"
+      >
+        <Reveal
+          className="relative overflow-hidden rounded-3xl border border-sky-400/15 bg-slate-950/60 p-10 backdrop-blur-md md:p-14"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+          >
+            <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-blue-500/30 blur-3xl" />
+            <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-indigo-500/25 blur-3xl" />
+          </div>
+
+          <div className="relative text-center">
+            <p className="font-mono text-xs uppercase tracking-[0.35em] text-sky-300/80">
+              06 / Contact
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={`mailto:${PROFILE.email}?subject=${encodeURIComponent(
+                  "Hi Magali — let's work together"
+                )}&body=${encodeURIComponent(
+                  `Hi Magali,\n\nI came across your portfolio and would love to chat about a project.\n\n— `
+                )}`}
+                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_15px_40px_-15px_rgba(56,189,248,0.7)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-15px_rgba(56,189,248,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              >
+                <Icon className="h-4 w-4" strokeWidth={2}>
+                  <path d="M4 4h16v16H4z" />
+                  <path d="m4 6 8 7 8-7" />
+                </Icon>
+                {PROFILE.email}
+              </a>
+            </div>
+
+            <div className="mt-8 flex justify-center gap-3">
+              <a
+                href={PROFILE.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn (opens in new tab)"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-sky-400/25 bg-slate-950/40 text-sky-200 backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-300/60 hover:text-sky-100"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+                  <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.93-2.06-2.07 0-1.14.92-2.06 2.06-2.06s2.06.92 2.06 2.06c0 1.14-.92 2.07-2.06 2.07zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+                </svg>
+              </a>
+              <a
+                href={PROFILE.socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub (opens in new tab)"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-sky-400/25 bg-slate-950/40 text-sky-200 backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-300/60 hover:text-sky-100"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+                  <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.76.4-1.27.74-1.56-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.2-1.5 3.17-1.18 3.17-1.18.63 1.6.23 2.76.11 3.05.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ============ Footer ============ */}
+      <footer className="relative mx-auto max-w-5xl px-6 pb-12 pt-2">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-8 text-xs text-slate-300/55 md:flex-row">
+          <p>
+            © {new Date().getFullYear()} {PROFILE.name}. All rights reserved.
+          </p>
+          <p className="font-mono">
+            Designed &amp; built with <span className="text-sky-300">Next.js</span>{" "}
+            &amp; <span className="text-sky-300">Tailwind</span>
+          </p>
+          <a
+            href="#about"
+            className="rounded-full border border-sky-400/20 bg-slate-950/40 px-3 py-1.5 text-[11px] text-sky-200 transition hover:-translate-y-0.5 hover:border-sky-300/50 hover:text-sky-100"
+          >
+            ↑ Back to top
+          </a>
+        </div>
       </footer>
     </div>
   );

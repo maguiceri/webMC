@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Magali Cerisola | Frontend Developer",
-  description: "Frontend developer specializing in React, Next.js, and modern UI.",
+  title: "Magali Cerisola | CV — Frontend Developer",
+  description:
+    "Curriculum Vitae of Magali Cerisola — frontend developer with 4+ years of experience building modern, responsive web applications.",
 };
 
 export default function RootLayout({
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050816] text-slate-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#020617] text-slate-100`}
       >
         <a className="skip-link" href="#main-content">
           Skip to main content
