@@ -10,7 +10,7 @@ import VideoBackground from "./components/VideoBackground";
 
 const PROFILE = {
   name: "Magali Cerisola",
-  role: "Frontend Developer",
+  role: "Full Stack Web Developer",
   tagline: `Hi! 👋 I’m Frontend Developer with more than 4 years of experience building responsive and scalable web applications. Passionate about technology, problem-solving, and creating modern user experiencesw. Currently studying Artificial Intelligence Engineering, with a strong interest in automation, innovation, and continuous learning.
 
 I enjoy taking on new challenges, solving problems and turning ideas into high-quality digital products.`,
