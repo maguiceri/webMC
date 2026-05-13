@@ -26,7 +26,7 @@ I enjoy taking on new challenges, solving problems and turning ideas into high-q
 
 const SKILLS: { title: string; icon: keyof typeof CategoryIcons; items: string[] }[] = [
   {
-    title: "Frontend",
+    title: "Frontend and backend",
     icon: "code",
     items: [
       "React",
@@ -67,7 +67,7 @@ const SKILLS: { title: string; icon: keyof typeof CategoryIcons; items: string[]
 ];
 
 const WORK: {
-  role: string;
+  role?: string;
   company: string;
   period?: string;
   location?: string;
@@ -76,10 +76,8 @@ const WORK: {
   tech?: string[];
 }[] = [
   {
-    role: "Frontend Developer",
-    company: "Banco Santander",
+    company: "Santander Technology Argentina",
     period: "2020 — 2026",
-    location: "Buenos Aires, AR",
     bullets: [
       "Worked as a Frontend Developer, participating in both projects built from scratch and refactoring / modernization processes for internal and customer-facing applications.",
       "Responsible for the development and maintenance of web interfaces, implementing new features, visual improvements, performance optimizations, accessibility enhancements and reusable component maintenance.",
@@ -87,9 +85,7 @@ const WORK: {
     ],
   },
   {
-    role: "Frontend Developer",
     company: "Freelance Projects",
-    location: "Buenos Aires, AR",
     bullets: [
       "Translated Figma designs into pixel-perfect, responsive interfaces for several clients.",
       "Delivered modern landing pages with a focus on accessibility and performance.",
@@ -615,12 +611,7 @@ export default function Home() {
                   </header>
                   <p className="mt-1 text-sm text-sky-200/85">
                     {entry.company}
-                    {entry.location && (
-                      <>
-                        <span className="mx-2 text-sky-400/40">•</span>
-                        <span className="text-slate-300/80">{entry.location}</span>
-                      </>
-                    )}
+
                   </p>
                   <ul className="mt-4 space-y-2 text-sm leading-relaxed text-slate-200/80">
                     {entry.bullets.map((b, bi) => (
