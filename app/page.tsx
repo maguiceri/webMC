@@ -101,7 +101,7 @@ const EDUCATION: {
   description?: string;
 }[] = [
   {
-    degree: "Ingeniería en Inteligencia Artificial",
+    degree: "Artificial Intelligence Engineering",
     institution: "Universidad de Palermo (UP)",
     period: "2025 — Present",
     description: `I am currently studying Artificial Intelligence Engineering, where I am expanding my knowledge in programming, algorithms, software development, data analysis and intelligent systems.
