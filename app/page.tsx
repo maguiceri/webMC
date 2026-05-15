@@ -191,6 +191,13 @@ export default function Home() {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
+    if (window.location.hash) {
+      history.replaceState(null, "", window.location.pathname);
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
@@ -712,7 +719,7 @@ export default function Home() {
         >
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl"
           >
             <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-blue-500/30 blur-3xl" />
             <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-indigo-500/25 blur-3xl" />
