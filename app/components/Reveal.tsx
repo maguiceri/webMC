@@ -74,11 +74,9 @@ export default function Reveal({
       style={{
         opacity: shown ? 1 : 0,
         transform: shown ? "translate3d(0,0,0)" : initialTransform[direction],
-        filter: shown ? "blur(0)" : "blur(6px)",
-        transition:
-          "opacity 700ms ease-out, transform 700ms ease-out, filter 700ms ease-out",
+        transition: "opacity 700ms ease-out, transform 700ms ease-out",
         transitionDelay: `${delayMs}ms`,
-        willChange: "opacity, transform, filter",
+        willChange: shown ? "auto" : "opacity, transform",
         ...style,
       }}
     >
