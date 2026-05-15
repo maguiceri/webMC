@@ -191,10 +191,9 @@ export default function Home() {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    if (window.location.hash) {
-      history.replaceState(null, "", window.location.pathname);
-      window.scrollTo(0, 0);
-    }
+    history.scrollRestoration = "manual";
+    history.replaceState(null, "", window.location.pathname);
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
