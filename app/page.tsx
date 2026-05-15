@@ -185,14 +185,19 @@ function Icon({
 
 /* ---------- Page ---------- */
 
+const scrollToSection = (id: string) =>
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+
 export default function Home() {
   const [showHeader, setShowHeader] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    history.replaceState(null, "", window.location.pathname);
-    window.scrollTo(0, 0);
+    if (window.location.hash) {
+      history.replaceState(null, "", window.location.pathname);
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   useEffect(() => {
@@ -248,6 +253,7 @@ export default function Home() {
         <div className="mx-auto mt-3 flex max-w-5xl items-center justify-between rounded-2xl border border-sky-400/15 bg-slate-950/60 px-5 py-3 backdrop-blur-md shadow-[0_10px_40px_-20px_rgba(56,189,248,0.45)]">
           <a
             href="#about"
+            onClick={(e) => { e.preventDefault(); scrollToSection("about"); }}
             className="font-mono text-sm tracking-[0.25em] text-sky-300 transition hover:text-sky-200"
           >
             Magali Cerisola
@@ -260,6 +266,7 @@ export default function Home() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(item.id); }}
                     className="rounded px-1.5 py-1 transition hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
                   >
                     {item.label}
@@ -345,7 +352,7 @@ export default function Home() {
                 >
                   <a
                     href={`#${item.id}`}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(item.id); setMobileOpen(false); }}
                     className="flex items-center justify-between rounded-xl px-4 py-3 text-base text-slate-100 transition hover:bg-sky-500/10 hover:text-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
                   >
                     <span className="flex items-center gap-3">
@@ -714,6 +721,7 @@ export default function Home() {
       >
         <Reveal
           className="relative overflow-hidden rounded-3xl border border-sky-400/15 bg-slate-950/60 p-10 backdrop-blur-md md:p-14"
+          style={{ clipPath: "inset(0 round 1.5rem)" }}
         >
           <div
             aria-hidden
@@ -785,6 +793,7 @@ export default function Home() {
           </p>
           <a
             href="#about"
+            onClick={(e) => { e.preventDefault(); scrollToSection("about"); }}
             className="rounded-full border border-sky-400/20 bg-slate-950/40 px-3 py-1.5 text-[11px] text-sky-200 transition hover:-translate-y-0.5 hover:border-sky-300/50 hover:text-sky-100"
           >
             ↑ Back to top

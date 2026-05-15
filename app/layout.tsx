@@ -66,10 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: "history.scrollRestoration='manual';" }} />
-      </head>
-      <body
+<body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#020617] text-slate-100`}
       >
         <a className="skip-link" href="#main-content">
